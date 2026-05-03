@@ -52,7 +52,13 @@ class MenuItem extends Model
     public function getLink()
     {
         if ($this->route) {
-            return route($this->route, json_decode($this->route_params ?? '[]', true));
+            $params = $this->route_params;
+
+            if (is_string($params)) {
+                $params = json_decode($params, true);
+            }
+
+            return route($this->route, $params ?: []);
         }
 
         return $this->url ?? '#';

@@ -8,6 +8,8 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class MenuController extends Controller
 {
@@ -25,7 +27,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        return view('backend.menus.create');
+        return view('backend.menus.create', ['routeOptions' => $this->routeOptions()]);
     }
 
     /**
@@ -62,7 +64,11 @@ class MenuController extends Controller
     public function edit(Menu $menu)
     {
         $formatted = $this->formatMenu($menu);
-        return view('backend.menus.edit', ['menu' => $menu, 'formatted' => $formatted]);
+        return view('backend.menus.edit', [
+            'menu' => $menu,
+            'formatted' => $formatted,
+            'routeOptions' => $this->routeOptions(),
+        ]);
     }
 
     /**
@@ -92,7 +98,8 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $menu->delete();
-        return response()->json(['deleted' => true]);
+        
+        return redirect()->route('menus.index')->with('success', 'Menu deleted successfully.');
     }
 
     /**
@@ -147,5 +154,28 @@ class MenuController extends Controller
         }
 
         return ['id' => $menu->id, 'name' => $menu->name, 'items' => $tree];
+    }
+
+    /**
+     * Available named routes for menu links.
+     */
+    protected function routeOptions(): array
+    {
+        return collect(Route::getRoutes()->getRoutes())
+            ->filter(function ($route) {
+                return $route->getName() && in_array('GET', $route->methods(), true);
+            })
+            ->map(function ($route) {
+                $name = $route->getName();
+
+                return [
+                    'name' => $name,
+                    'uri' => $route->uri(),
+                    'label' => Str::headline(str_replace(['.', '_'], ' ', $name)) . ' (' . $route->uri() . ')',
+                ];
+            })
+            ->sortBy('label')
+            ->values()
+            ->all();
     }
 }
