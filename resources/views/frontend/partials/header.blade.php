@@ -6,19 +6,9 @@
             <!-- Hotline -->
             <div class="text-dark text-nowrap flex-shrink-1">
                 Hotline:
-                <a href="tel:09617-300600" class="text-decoration-none text-dark fw-bold">
-                    09617-300600
+                <a href="tel:{{ get_setting('company_hotline') }}" class="text-decoration-none text-dark fw-bold">
+                    {{ get_setting('company_hotline') }}
                 </a>
-            </div>
-
-            <!-- Support + Auth Buttons -->
-            <div class="d-flex align-items-center gap-2 text-nowrap flex-shrink-1">
-                <a href="#support" class="btn btn-xs text-white"
-                    style="background-color: #F35813; padding: 4px 8px; border-radius: 4px;">
-                    Support
-                </a>
-
-                <a href="login.html" class="btn btn-primary btn-xs">Login</a>
             </div>
         </div>
     </div>
@@ -30,16 +20,13 @@
 
         <!-- Logo -->
         <a href="index.html" class="logo d-flex align-items-center me-auto">
-            <img src="/assets/img/system_logo.png" alt="brand-logo"
+            <img src="{{ asset(get_setting('company_dark_logo')) }}" alt="brand-logo"
                 style="height: 100%; width: 100%; object-fit: contain; display: block;">
         </a>
 
         <!-- Navigation -->
         <nav id="navmenu" class="navmenu">
             @php
-                use App\Models\Menu;
-
-                $menu = Menu::where('name', 'Main Menu')->first() ?? Menu::first();
                 $items = $menu ? $menu->items()->with('children')->get() : collect();
             @endphp
 

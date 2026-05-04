@@ -12,8 +12,11 @@ class HomeController extends Controller
 	 */
 	public function index()
 	{
-		$menu = Menu::where('name', 'main')->first();
-		return view('frontend.pages.index');
+		$menu = Menu::where('id', get_setting('header_menu'))->first();
+		if (!$menu) {
+			$menu = Menu::first();
+		}
+		return view('frontend.pages.index', compact('menu'));
 	}
 
 	/**
@@ -24,4 +27,3 @@ class HomeController extends Controller
 		return $this->index();
 	}
 }
-
